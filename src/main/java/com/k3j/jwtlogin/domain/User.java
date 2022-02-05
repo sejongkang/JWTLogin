@@ -14,8 +14,8 @@ import static javax.persistence.GenerationType.AUTO;
 
 @Entity //JPA에서 관리할 객체 선언.
 @Data   //Lombok의 Getter,Setter,ToString,~Constructor 등 묶음
-//@NoArgsConstructor  //Argument 없는 생성자 생성
-//@AllArgsConstructor //모든 Argument 포함한 생성자 생성
+@NoArgsConstructor  //Argument 없는 생성자 생성
+@AllArgsConstructor //모든 Argument 포함한 생성자 생성
 // UserDatils 클래스와 분리해서 관리하는게 나음.
 public class User {
 
