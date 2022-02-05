@@ -1,0 +1,13 @@
+package com.k3j.jwtlogin;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class JwtLoginApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(JwtLoginApplication.class, args);
+    }
+
+}
