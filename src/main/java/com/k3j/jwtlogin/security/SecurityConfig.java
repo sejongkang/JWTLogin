@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -29,13 +30,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
     }
 
+    // WebSecurity 설정이 아닌, HttpSecurity로 설정해야함.
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
+        // 로그인 요청 url 정의. 스프링에서 컨트롤러 처리. 기본값은 /login.
+        customAuthenticationFilter.setFilterProcessesUrl("/api/login");
+
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
-        http.authorizeRequests().anyRequest().permitAll();
+        // 로그인 요청은 인증없이 모두 허용.
+        http.authorizeRequests().antMatchers("/api/login").permitAll();
+        // user 관련 엔드포인트는 USER 권한만
+        http.authorizeRequests().antMatchers(GET, "/api/user/**").hasAnyAuthority("ROLE_USER");
+        // user 관련 엔드포인트에서 save 관련은 ADMIN 권한만
+        http.authorizeRequests().antMatchers(GET, "/api/user/save/**").hasAnyAuthority("ROLE_ADMIN");
+        // 나머지는 모두 인증 필요.
+        http.authorizeRequests().anyRequest().authenticated();
         // filter에 authenticationManger 객체 주입.
-        http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
+        http.addFilter(customAuthenticationFilter);
     }
 
     // 인코더 함수 빈 등록
